@@ -6,5 +6,11 @@ nodes:
   image: kindest/node:v1.22.9@sha256:8135260b959dfe320206eb36b3aeda9cffcb262f4b44cda6b33f7bb73f453105
 - role: worker
   image: kindest/node:v1.22.9@sha256:8135260b959dfe320206eb36b3aeda9cffcb262f4b44cda6b33f7bb73f453105
+  extraPortMappings:
+  - containerPort: 30300
+    hostPort: 30301
 - role: worker
   image: kindest/node:v1.22.9@sha256:8135260b959dfe320206eb36b3aeda9cffcb262f4b44cda6b33f7bb73f453105
+  extraPortMappings:
+  - containerPort: 30300
+    hostPort: 30302
