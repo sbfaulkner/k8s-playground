@@ -5,10 +5,8 @@ metadata:
   labels:
     app: hello-node
 spec:
-  type: NodePort
   ports:
   - port: 8080
     targetPort: echoserver
-    nodePort: 30300
   selector:
     app: hello-node
