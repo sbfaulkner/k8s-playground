@@ -1,2 +1,2 @@
-tls/*
-
+config/tls/*
+config/secrets/*
