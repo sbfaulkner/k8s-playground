@@ -1,0 +1,21 @@
+name: k8s-playground
+
+up:
+  - homebrew:
+    - podman
+    - kubectl
+    - kubectx
+    - kind
+    - mkcert
+  - go:
+      version: 1.18.2
+
+commands:
+  build:
+    run: go build -o bin/ ./...
+
+  run-built:
+    run: bin/hello
+
+  test:
+    run: go test ./...
