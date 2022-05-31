@@ -9,6 +9,38 @@ up:
     - mkcert
   - go:
       version: 1.18.2
+  - custom:
+      name: Install the local CA in the system trust store.
+      met?: test -f "${HOME}/Library/Application Support/mkcert/rootCA.pem"
+      meet: mkcert -install
+  - custom:
+      name: Initialize virtual machine.
+      met?: podman machine inspect >/dev/null 2>&1
+      meet: podman machine init --rootful
+  - custom:
+      name: Start virtual machine.
+      met?: test "$(podman machine inspect --format '{{.State}}')" == "running"
+      meet: podman machine start
+  - custom:
+      name: Create registry container.
+      met?: test "$(podman inspect -f '{{.State.Running}}' kind-registry 2>/dev/null)" == "true"
+      meet: podman run -d --restart=always -p 127.0.0.1:5001:5000 --name kind-registry registry:2
+  - custom:
+      name: Create cluster.
+      met?: kind get clusters 2>/dev/null | grep -q k8s-playground >/dev/null
+      meet: kind create cluster --config cluster.yaml
+  - custom:
+      name: Connect registry to cluster network.
+      met?: test "$(podman inspect -f '{{json .NetworkSettings.Networks.kind}}' kind-registry 2>/dev/null)" != "null"
+      meet: podman network connect kind kind-registry
+  - custom:
+      name: Document the local registry.
+      met?: kubectl get --namespace=kube-public configmap/local-registry-hosting -o name >/dev/null 2>&1
+      meet: kubectl apply -f registry.yaml
+  - custom:
+      name: Generate self-signed certificate.
+      met?: test -f config/tls/hello.pem -a -f config/tls/hello-key.pem
+      meet: mkcert -cert-file config/tls/hello.pem -key-file config/tls/hello-key.pem hello.k8s-playground.dev
 
 commands:
   build:
@@ -19,3 +51,9 @@ commands:
 
   test:
     run: go test ./...
+
+  deploy:
+    run: |
+      podman build --tag hello .
+      podman tag localhost/hello:latest localhost:5001/hello:latest
+      podman push --tls-verify=false localhost:5001/hello:latest
