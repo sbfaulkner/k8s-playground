@@ -17,6 +17,7 @@ spec:
     spec:
       containers:
       - image: localhost:5001/hello:latest
+        imagePullPolicy: Always
         name: echoserver
         ports:
         - containerPort: 8080
