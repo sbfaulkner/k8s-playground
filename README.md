@@ -5,28 +5,6 @@
 kubectl apply -f ingress-nginx.yaml
 ```
 
-## Build container image
-```
-dev deploy
-```
-
-## Install Application
-
-### Create namespace
-```
-kubectl create namespace hello
-```
-
-### Create TLS certificate
-```
-kubectl create --namespace hello secret tls hello-tls --cert=config/tls/hello.pem --key=config/tls/hello-key.pem
-```
-
-### Deploy application
-```
-kubectl apply -f hello.yaml
-```
-
 ## Install Datadog Agent
 
 ### Create Namespace
@@ -67,4 +45,26 @@ kubectl apply -f datadog-agent/confd-configmap.yaml
 ### Deploy DaemonSet
 ```
 kubectl apply -f datadog-agent/daemonset.yaml
+```
+
+## Build container image
+```
+dev deploy
+```
+
+## Install Application
+
+### Create namespace
+```
+kubectl create namespace hello
+```
+
+### Create TLS certificate
+```
+kubectl create --namespace hello secret tls hello-tls --cert=config/tls/hello.pem --key=config/tls/hello-key.pem
+```
+
+### Deploy application
+```
+kubectl apply -f hello.yaml
 ```

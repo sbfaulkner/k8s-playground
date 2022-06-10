@@ -6,7 +6,7 @@ metadata:
   labels:
     app: hello
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: hello
@@ -17,23 +17,30 @@ spec:
     spec:
       hostPID: true
       containers:
-        - image: localhost:5001/hello:latest
-          imagePullPolicy: Always
+      - image: localhost:5001/hello:latest
+        imagePullPolicy: Always
+        name: echoserver
+        ports:
+        - containerPort: 8080
+          protocol: TCP
           name: echoserver
-          ports:
-            - containerPort: 8080
-              protocol: TCP
-              name: echoserver
-          env:
-            - name: DD_AGENT_HOST
-              value: "unix:///var/run/datadog/dsd.socket"
-          volumeMounts:
-            - name: dsdsocket
-              mountPath: /var/run/datadog
+        resources:
+          limits:
+            cpu: 500m
+            memory: 32Mi
+          requests:
+            cpu: 200m
+            memory: 16Mi
+        env:
+        - name: DD_AGENT_HOST
+          value: "unix:///var/run/datadog/dsd.socket"
+        volumeMounts:
+        - name: dsdsocket
+          mountPath: /var/run/datadog
       volumes:
-        - hostPath:
-            path: /var/run/datadog/
-          name: dsdsocket
+      - hostPath:
+          path: /var/run/datadog/
+        name: dsdsocket
 ---
 apiVersion: v1
 kind: Service
@@ -70,3 +77,17 @@ spec:
             name: hello
             port:
               number: 8080
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hello
+  namespace: hello
+spec:
+  minReplicas: 1
+  maxReplicas: 4
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: hello
+  targetCPUUtilizationPercentage: 50
