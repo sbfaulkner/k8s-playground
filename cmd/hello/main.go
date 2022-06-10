@@ -14,7 +14,7 @@ import (
 var statsdClient *statsd.Client
 
 func init() {
-	client, err := statsd.New("127.0.0.1:8125")
+	client, err := statsd.New("")
 	if err != nil {
 		log.Panic().Err(err).Msg("Failed to create statsd client")
 	}

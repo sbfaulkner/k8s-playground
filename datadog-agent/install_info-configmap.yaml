@@ -1,0 +1,15 @@
+# Source: datadog/templates/install_info-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: datadog-installinfo
+  namespace: datadog-agent
+  labels: {}
+  annotations: {}
+data:
+  install_info: |
+    ---
+    install_method:
+      tool: kubernetes manifest
+      tool_version: kubernetes manifest
+      installer_version: kubernetes manifest
